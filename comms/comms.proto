@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package comms;
+
+message StartReq {
+  string id = 1;
+}
+message StartResp {
+  int64 seq = 1;
+}
+
+service Server {
+  rpc Start(stream StartReq) returns (stream StartResp) {}
+}
