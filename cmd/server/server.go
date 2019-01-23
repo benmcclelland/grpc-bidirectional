@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"net"
+	"time"
 
 	"github.com/benmcclelland/grpc-bidirectional/comms"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 )
 
 type server struct{}
@@ -32,7 +34,10 @@ func (s *server) Start(stream comms.Server_StartServer) error {
 }
 
 func main() {
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
+		Time:    10 * time.Second,
+		Timeout: 5 * time.Second,
+	}))
 	comms.RegisterServerServer(grpcServer, new(server))
 
 	listen, err := net.Listen("tcp", ":8888")
