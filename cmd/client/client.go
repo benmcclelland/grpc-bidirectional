@@ -49,19 +49,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("send err: %v", err)
 	}
-	err = stream.CloseSend()
-	if err != nil {
-		log.Fatalf("closesend err: %v", err)
-	}
 
 	c := make(chan *comms.Resp)
 	go func() {
+		var res bool
 		for {
 			resp, err := stream.Recv()
 			if err != nil {
 				log.Fatalf("recv err :%v", err)
 			}
 			c <- resp
+			err = stream.Send(&comms.Req{Status: res})
+			if err != nil {
+				log.Fatalf("send err :%v", err)
+			}
+			if res {
+				res = false
+			} else {
+				res = true
+			}
 		}
 	}()
 
