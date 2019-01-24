@@ -8,8 +8,8 @@ It is generated from these files:
 	comms.proto
 
 It has these top-level messages:
-	StartReq
-	StartResp
+	Req
+	Resp
 */
 package comms
 
@@ -33,32 +33,32 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type StartReq struct {
+type Req struct {
 	Id string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 }
 
-func (m *StartReq) Reset()                    { *m = StartReq{} }
-func (m *StartReq) String() string            { return proto.CompactTextString(m) }
-func (*StartReq) ProtoMessage()               {}
-func (*StartReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *Req) Reset()                    { *m = Req{} }
+func (m *Req) String() string            { return proto.CompactTextString(m) }
+func (*Req) ProtoMessage()               {}
+func (*Req) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *StartReq) GetId() string {
+func (m *Req) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type StartResp struct {
+type Resp struct {
 	Seq int64 `protobuf:"varint,1,opt,name=seq" json:"seq,omitempty"`
 }
 
-func (m *StartResp) Reset()                    { *m = StartResp{} }
-func (m *StartResp) String() string            { return proto.CompactTextString(m) }
-func (*StartResp) ProtoMessage()               {}
-func (*StartResp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *Resp) Reset()                    { *m = Resp{} }
+func (m *Resp) String() string            { return proto.CompactTextString(m) }
+func (*Resp) ProtoMessage()               {}
+func (*Resp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-func (m *StartResp) GetSeq() int64 {
+func (m *Resp) GetSeq() int64 {
 	if m != nil {
 		return m.Seq
 	}
@@ -66,8 +66,8 @@ func (m *StartResp) GetSeq() int64 {
 }
 
 func init() {
-	proto.RegisterType((*StartReq)(nil), "comms.StartReq")
-	proto.RegisterType((*StartResp)(nil), "comms.StartResp")
+	proto.RegisterType((*Req)(nil), "comms.Req")
+	proto.RegisterType((*Resp)(nil), "comms.Resp")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -78,95 +78,95 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for Server service
+// Client API for Work service
 
-type ServerClient interface {
-	Start(ctx context.Context, opts ...grpc.CallOption) (Server_StartClient, error)
+type WorkClient interface {
+	Hello(ctx context.Context, opts ...grpc.CallOption) (Work_HelloClient, error)
 }
 
-type serverClient struct {
+type workClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewServerClient(cc *grpc.ClientConn) ServerClient {
-	return &serverClient{cc}
+func NewWorkClient(cc *grpc.ClientConn) WorkClient {
+	return &workClient{cc}
 }
 
-func (c *serverClient) Start(ctx context.Context, opts ...grpc.CallOption) (Server_StartClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_Server_serviceDesc.Streams[0], c.cc, "/comms.Server/Start", opts...)
+func (c *workClient) Hello(ctx context.Context, opts ...grpc.CallOption) (Work_HelloClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_Work_serviceDesc.Streams[0], c.cc, "/comms.Work/Hello", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &serverStartClient{stream}
+	x := &workHelloClient{stream}
 	return x, nil
 }
 
-type Server_StartClient interface {
-	Send(*StartReq) error
-	Recv() (*StartResp, error)
+type Work_HelloClient interface {
+	Send(*Req) error
+	Recv() (*Resp, error)
 	grpc.ClientStream
 }
 
-type serverStartClient struct {
+type workHelloClient struct {
 	grpc.ClientStream
 }
 
-func (x *serverStartClient) Send(m *StartReq) error {
+func (x *workHelloClient) Send(m *Req) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *serverStartClient) Recv() (*StartResp, error) {
-	m := new(StartResp)
+func (x *workHelloClient) Recv() (*Resp, error) {
+	m := new(Resp)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// Server API for Server service
+// Server API for Work service
 
-type ServerServer interface {
-	Start(Server_StartServer) error
+type WorkServer interface {
+	Hello(Work_HelloServer) error
 }
 
-func RegisterServerServer(s *grpc.Server, srv ServerServer) {
-	s.RegisterService(&_Server_serviceDesc, srv)
+func RegisterWorkServer(s *grpc.Server, srv WorkServer) {
+	s.RegisterService(&_Work_serviceDesc, srv)
 }
 
-func _Server_Start_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ServerServer).Start(&serverStartServer{stream})
+func _Work_Hello_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(WorkServer).Hello(&workHelloServer{stream})
 }
 
-type Server_StartServer interface {
-	Send(*StartResp) error
-	Recv() (*StartReq, error)
+type Work_HelloServer interface {
+	Send(*Resp) error
+	Recv() (*Req, error)
 	grpc.ServerStream
 }
 
-type serverStartServer struct {
+type workHelloServer struct {
 	grpc.ServerStream
 }
 
-func (x *serverStartServer) Send(m *StartResp) error {
+func (x *workHelloServer) Send(m *Resp) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *serverStartServer) Recv() (*StartReq, error) {
-	m := new(StartReq)
+func (x *workHelloServer) Recv() (*Req, error) {
+	m := new(Req)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-var _Server_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "comms.Server",
-	HandlerType: (*ServerServer)(nil),
+var _Work_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "comms.Work",
+	HandlerType: (*WorkServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Start",
-			Handler:       _Server_Start_Handler,
+			StreamName:    "Hello",
+			Handler:       _Work_Hello_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
@@ -177,14 +177,13 @@ var _Server_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("comms.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 130 bytes of a gzipped FileDescriptorProto
+	// 126 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4e, 0xce, 0xcf, 0xcd,
-	0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x73, 0x94, 0xa4, 0xb8, 0x38, 0x82,
-	0x4b, 0x12, 0x8b, 0x4a, 0x82, 0x52, 0x0b, 0x85, 0xf8, 0xb8, 0x98, 0x32, 0x53, 0x24, 0x18, 0x15,
-	0x18, 0x35, 0x38, 0x83, 0x98, 0x32, 0x53, 0x94, 0x64, 0xb9, 0x38, 0xa1, 0x72, 0xc5, 0x05, 0x42,
-	0x02, 0x5c, 0xcc, 0xc5, 0xa9, 0x85, 0x60, 0x59, 0xe6, 0x20, 0x10, 0xd3, 0xc8, 0x8a, 0x8b, 0x2d,
-	0x38, 0xb5, 0xa8, 0x2c, 0xb5, 0x48, 0xc8, 0x80, 0x8b, 0x15, 0xac, 0x50, 0x88, 0x5f, 0x0f, 0x62,
-	0x05, 0xcc, 0x48, 0x29, 0x01, 0x54, 0x81, 0xe2, 0x02, 0x25, 0x06, 0x0d, 0x46, 0x03, 0xc6, 0x24,
-	0x36, 0xb0, 0x23, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x75, 0x4a, 0x8f, 0xde, 0x93, 0x00,
-	0x00, 0x00,
+	0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x73, 0x94, 0x44, 0xb9, 0x98, 0x83,
+	0x52, 0x0b, 0x85, 0xf8, 0xb8, 0x98, 0x32, 0x53, 0x24, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0x98,
+	0x32, 0x53, 0x94, 0x24, 0xb8, 0x58, 0x82, 0x52, 0x8b, 0x0b, 0x84, 0x04, 0xb8, 0x98, 0x8b, 0x53,
+	0x0b, 0xc1, 0x12, 0xcc, 0x41, 0x20, 0xa6, 0x91, 0x1e, 0x17, 0x4b, 0x78, 0x7e, 0x51, 0xb6, 0x90,
+	0x1a, 0x17, 0xab, 0x47, 0x6a, 0x4e, 0x4e, 0xbe, 0x10, 0x97, 0x1e, 0xc4, 0xd8, 0xa0, 0xd4, 0x42,
+	0x29, 0x6e, 0x38, 0xbb, 0xb8, 0x40, 0x89, 0x41, 0x83, 0xd1, 0x80, 0x31, 0x89, 0x0d, 0x6c, 0x9d,
+	0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x3d, 0x21, 0x0c, 0xee, 0x7d, 0x00, 0x00, 0x00,
 }

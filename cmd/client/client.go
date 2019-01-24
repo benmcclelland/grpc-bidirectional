@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"os"
-	"time"
 
 	"github.com/benmcclelland/grpc-bidirectional/comms"
 	"golang.org/x/net/context"
@@ -14,29 +12,35 @@ import (
 func main() {
 	conn, err := grpc.Dial("127.0.0.1:8888", grpc.WithInsecure())
 	if err != nil {
-		panic(err)
+		log.Fatalf("dial err :%v", err)
 	}
+	defer conn.Close()
 
-	client := comms.NewServerClient(conn)
-	stream, err := client.Start(context.Background())
+	client := comms.NewWorkClient(conn)
+	stream, err := client.Hello(context.Background())
 	if err != nil {
-		panic(err)
+		log.Fatalf("start err :%v", err)
 	}
 
-	rand.Seed(int64(time.Now().Nanosecond()))
-	i := rand.Intn(10)
-	log.Println(i)
+	stream.Send(&comms.Req{Id: os.Args[1]})
 
-	for j := 0; j < i; j++ {
-		stream.Send(&comms.StartReq{Id: os.Args[1]})
-		resp, err := stream.Recv()
-		if err != nil {
-			panic(err)
+	c := make(chan *comms.Resp)
+	go func() {
+		for {
+			resp, err := stream.Recv()
+			if err != nil {
+				log.Fatalf("recv err :%v", err)
+			}
+			c <- resp
 		}
-		log.Println("recv seq:", resp.Seq)
+	}()
 
-		time.Sleep(time.Second)
+	for {
+		select {
+		case <-stream.Context().Done():
+			log.Fatalf("server disconnected")
+		case r := <-c:
+			log.Println("recv work:", r.Seq)
+		}
 	}
-
-	conn.Close()
 }

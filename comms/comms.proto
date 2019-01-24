@@ -2,13 +2,13 @@ syntax = "proto3";
 
 package comms;
 
-message StartReq {
+message Req {
   string id = 1;
 }
-message StartResp {
+message Resp {
   int64 seq = 1;
 }
 
-service Server {
-  rpc Start(stream StartReq) returns (stream StartResp) {}
+service Work {
+  rpc Hello(stream Req) returns (stream Resp) {}
 }
