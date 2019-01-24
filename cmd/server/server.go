@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -41,6 +42,11 @@ func (s *server) Hello(stream comms.Work_HelloServer) error {
 }
 
 func main() {
+	var port string
+	flag.StringVar(&port, "p", ":8888", "server")
+	flag.Parse()
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
 	grpcServer := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
 		Time:    10 * time.Second,
 		Timeout: 5 * time.Second,
@@ -52,7 +58,7 @@ func main() {
 
 	comms.RegisterWorkServer(grpcServer, s)
 
-	listen, err := net.Listen("tcp", ":8888")
+	listen, err := net.Listen("tcp", port)
 	if err != nil {
 		panic(err)
 	}
