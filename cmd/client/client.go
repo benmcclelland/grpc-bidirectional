@@ -45,7 +45,14 @@ func main() {
 		}
 	}
 
-	stream.Send(&comms.Req{Id: flag.Args()[0]})
+	err = stream.Send(&comms.Req{Id: flag.Args()[0]})
+	if err != nil {
+		log.Fatalf("send err: %v", err)
+	}
+	err = stream.CloseSend()
+	if err != nil {
+		log.Fatalf("closesend err: %v", err)
+	}
 
 	c := make(chan *comms.Resp)
 	go func() {
