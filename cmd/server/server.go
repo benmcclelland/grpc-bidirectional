@@ -76,19 +76,16 @@ func main() {
 
 		i++
 
-		var wg sync.WaitGroup
 		fmt.Println("connected clients:")
 		for k, v := range s.clients {
 			fmt.Println(k)
-			wg.Add(1)
 			go func(name string, hw comms.Work_HelloServer) {
-				defer wg.Done()
 				req, err := hw.Recv()
 				if err != nil {
 					log.Printf("ERROR: %v: %v", name, err)
 					return
 				}
-				log.Printf("%v: %v", name, req.Status)
+				log.Printf("%v: %v %v", name, req.Seq, req.Status)
 			}(k, v)
 			err := v.Send(&comms.Resp{Seq: i})
 			if err != nil {
@@ -96,7 +93,6 @@ func main() {
 			}
 		}
 		s.Unlock()
-		wg.Wait()
 		time.Sleep(time.Second)
 	}
 }

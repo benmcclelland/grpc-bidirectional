@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/benmcclelland/grpc-bidirectional/comms"
 	"golang.org/x/net/context"
@@ -55,19 +56,18 @@ func main() {
 		var res bool
 		for {
 			resp, err := stream.Recv()
-			if err != nil {
-				log.Fatalf("recv err :%v", err)
-			}
-			c <- resp
-			err = stream.Send(&comms.Req{Status: res})
-			if err != nil {
-				log.Fatalf("send err :%v", err)
-			}
-			if res {
-				res = false
-			} else {
-				res = true
-			}
+			go func(r *comms.Resp) {
+				if err != nil {
+					log.Fatalf("recv err :%v", err)
+				}
+				c <- r
+				time.Sleep(time.Duration(r.Seq) * 100 * time.Millisecond)
+				log.Println("done work:", r.Seq)
+				err = stream.Send(&comms.Req{Seq: r.Seq, Status: res})
+				if err != nil {
+					log.Fatalf("send err :%v", err)
+				}
+			}(resp)
 		}
 	}()
 

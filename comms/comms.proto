@@ -5,6 +5,7 @@ package comms;
 message Req {
   string id = 1;
   bool status = 2;
+  int64 seq = 3;
 }
 message Resp {
   int64 seq = 1;
